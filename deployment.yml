@@ -3,7 +3,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: mysql-dados
 spec:
-  #storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
@@ -12,7 +11,6 @@ spec:
   storageClassName: standard-rwo
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,21 +19,21 @@ spec:
   selector:
     matchLabels:
       app: mysql
-    template:
-      metadata:
-        labels:
-          app: mysql
-      spec:
-        containers:
-        - image: danilojstecnologia/projeto-database:1.0
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: denilsonbonatti/projeto-database:1.0
         args:
         - "--ignore-db-dir=lost+found"
-        imagePullPolicy: Aways
+        imagePullPolicy: Always
         name: mysql
         ports:
         - containerPort: 3306
           name: mysql
-
+        
         volumeMounts:
         - name: mysql-dados
           mountPath: /var/lib/mysql/
@@ -43,29 +41,26 @@ spec:
       - name: mysql-dados
         persistentVolumeClaim:
           claimName: mysql-dados
-        
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: php
   labels:
     app: php
-spec: 
+spec:
   replicas: 6
   selector:
-    matchLabels:  
+    matchLabels:
       app: php
-    template:
-      metadata:
-        labels:
-          app: php
-      spec:
-        containers:
-        - name: php
-          image: danilojstecnologia/projeto-backend:1.0
-          imagePullPolicy: Always
-          ports:
-          - containerPort: 80
-
+  template:
+    metadata:
+      labels:
+        app: php
+    spec:
+      containers:
+      - name: php
+        image: denilsonbonatti/exemplo-app:1.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
